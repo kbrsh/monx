@@ -1,0 +1,35 @@
+{
+  "name": "monx",
+  "version": "0.0.1",
+  "description": "Clean State Management for Moon",
+  "main": "dist/monx.min.js",
+  "scripts": {
+    "build": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KingPixil/monx.git"
+  },
+  "keywords": [
+    "monx",
+    "state",
+    "management",
+    "state",
+    "moon"
+  ],
+  "author": "Kabir Shah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KingPixil/monx/issues"
+  },
+  "homepage": "https://github.com/KingPixil/monx#readme",
+  "devDependencies": {
+    "buble": "^0.15.2",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-header": "^1.8.8",
+    "gulp-include": "^2.3.1",
+    "gulp-size": "^2.1.0",
+    "gulp-uglify": "^3.0.0"
+  }
+}
