@@ -46,7 +46,6 @@
     }
     
     Monx.prototype.install = function(instance) {
-      var name = null;
       var currentInstance = null;
       var instances = this.instances;
       var map = this.map;
@@ -89,7 +88,7 @@
       Moon = _Moon;
     
       var MoonInit = Moon.prototype.init;
-      var MoonMount = Moon.prototype.mount;
+      var MoonRender = Moon.prototype.render;
     
       Moon.prototype.init = function() {
         var store = null;
@@ -101,9 +100,10 @@
         MoonInit.apply(this, arguments);
       }
     
-      Moon.prototype.mount = function() {
+      Moon.prototype.render = function() {
         var name = null;
-        var store = null;
+        var dom = null;
+    
         if(this.$options.store !== undefined && tested[(name = this.$name)] !== true) {
           // Mark this component as tested
           tested[name] = true;
@@ -112,13 +112,16 @@
           target = name;
     
           // Mount
-          MoonMount.apply(this, arguments);
+          dom = MoonRender.apply(this, arguments);
     
           // Stop capturing dependencies
           target = null;
         } else {
-          MoonMount.apply(this, arguments);
+          dom = MoonRender.apply(this, arguments);
         }
+    
+        this.render = MoonRender;
+        return dom;
       }
     }
     

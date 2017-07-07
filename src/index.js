@@ -64,7 +64,7 @@ Monx.init = function(_Moon) {
   Moon = _Moon;
 
   let MoonInit = Moon.prototype.init;
-  let MoonMount = Moon.prototype.mount;
+  let MoonRender = Moon.prototype.render;
 
   Moon.prototype.init = function() {
     let store = null;
@@ -76,9 +76,10 @@ Monx.init = function(_Moon) {
     MoonInit.apply(this, arguments);
   }
 
-  Moon.prototype.mount = function() {
+  Moon.prototype.render = function() {
     let name = null;
-    let store = null;
+    let dom = null;
+
     if(this.$options.store !== undefined && tested[(name = this.$name)] !== true) {
       // Mark this component as tested
       tested[name] = true;
@@ -87,12 +88,15 @@ Monx.init = function(_Moon) {
       target = name;
 
       // Mount
-      MoonMount.apply(this, arguments);
+      dom = MoonRender.apply(this, arguments);
 
       // Stop capturing dependencies
       target = null;
     } else {
-      MoonMount.apply(this, arguments);
+      dom = MoonRender.apply(this, arguments);
     }
+
+    this.render = MoonRender;
+    return dom;
   }
 }
