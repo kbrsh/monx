@@ -1,4 +1,6 @@
 let Moon = null;
+let target = null;
+let tested = {};
 
 //=require ./util/util.js
 
@@ -10,8 +12,11 @@ function Monx(options) {
   // Setup actions
   defineProperty(this, "actions", options.actions, {});
 
-  // Setup instance
-  this.instance = null;
+  // Setup instances
+  this.instances = [];
+
+  // Setup dependency map
+  this.map = {};
 }
 
 Monx.prototype.dispatch = function(name, payload) {
@@ -19,18 +24,37 @@ Monx.prototype.dispatch = function(name, payload) {
 }
 
 Monx.prototype.install = function(instance) {
-  this.instance = instance;
+  let currentInstance = null;
+  let instances = this.instances;
+  let map = this.map;
 
+  // Add to set of instances to update
+  instances.push(instance);
+
+  // Initialize reactive state
   let state = this.state;
   let _state = this._state;
   for(let key in _state) {
     Object.defineProperty(state, key, {
       get: function() {
+        if(target !== null) {
+          if(map[target] === undefined) {
+            map[target] = {};
+          }
+
+          map[target][key] = true;
+        }
+
         return _state[key];
       },
       set: function(value) {
         _state[key] = value;
-        instance.build();
+
+        for(let i = 0; i < instances.length; i++) {
+          if(map[(currentInstance = instances[i]).$name][key] === true) {
+            currentInstance.build();
+          }
+        }
       }
     });
   }
@@ -40,13 +64,35 @@ Monx.init = function(_Moon) {
   Moon = _Moon;
 
   let MoonInit = Moon.prototype.init;
+  let MoonMount = Moon.prototype.mount;
+
   Moon.prototype.init = function() {
-    if(this.$options.store !== undefined) {
-      let store = this.$options.store;
+    let store = null;
+    if((store = this.$options.store) !== undefined) {
       this.$data.store = store;
       store.install(this);
     }
 
     MoonInit.apply(this, arguments);
+  }
+
+  Moon.prototype.mount = function() {
+    let name = null;
+    let store = null;
+    if(this.$options.store !== undefined && tested[(name = this.$name)] !== true) {
+      // Mark this component as tested
+      tested[name] = true;
+
+      // Setup target to capture dependencies
+      target = name;
+
+      // Mount
+      MoonMount.apply(this, arguments);
+
+      // Stop capturing dependencies
+      target = null;
+    } else {
+      MoonMount.apply(this, arguments);
+    }
   }
 }
