@@ -9,53 +9,16 @@
   /* ======= Global Monx ======= */
   (typeof module === "object" && module.exports) ? module.exports = factory() : root.Monx = factory();
 }(this, function() {
-    var Moon = null;
     var target = null;
     var tested = {};
     
-    var notify = function(key, value) {
-      
-    }
-    
-    var defineProperty = function(obj, prop, value, def) {
-      if(value === undefined) {
-        obj[prop] = def;
-      } else {
-        obj[prop] = value;
-      }
-    }
-    
-    
-    function Monx(options) {
-      // Setup state
-      this.state = {};
-      defineProperty(this, "_state", options.state, {});
-    
-      // Setup actions
-      defineProperty(this, "actions", options.actions, {});
-    
-      // Setup instances
-      this.instances = [];
-    
-      // Setup dependency map
-      this.map = {};
-    }
-    
-    Monx.prototype.dispatch = function(name, payload) {
-      this.actions[name](this.state, payload);
-    }
-    
-    Monx.prototype.install = function(instance) {
+    var initState = function(store) {
       var currentInstance = null;
-      var instances = this.instances;
-      var map = this.map;
+      var instances = store.instances;
+      var map = store.map;
+      var state = store.state;
+      var _state = store._state;
     
-      // Add to set of instances to update
-      instances.push(instance);
-    
-      // Initialize reactive state
-      var state = this.state;
-      var _state = this._state;
       var loop = function ( key ) {
         Object.defineProperty(state, key, {
           get: function() {
@@ -84,38 +47,68 @@
       for(var key in _state) loop( key );
     }
     
-    Monx.init = function(_Moon) {
-      Moon = _Moon;
-    
-      var MoonInit = Moon.prototype.init;
-      var MoonRender = Moon.prototype.render;
-    
-      Moon.prototype.init = function() {
-        var store = null;
-        if((store = this.$options.store) !== undefined) {
-          this.$data.store = store;
-          store.install(this);
-        }
-    
-        MoonInit.apply(this, arguments);
+    var defineProperty = function(obj, prop, value, def) {
+      if(value === undefined) {
+        obj[prop] = def;
+      } else {
+        obj[prop] = value;
       }
+    }
     
+    
+    function Monx(options) {
+      // Setup state
+      this.state = {};
+      defineProperty(this, "_state", options.state, {});
+    
+      // Setup actions
+      defineProperty(this, "actions", options.actions, {});
+    
+      // Setup instances
+      this.instances = [];
+    
+      // Setup dependency map
+      this.map = {};
+    
+      // Initialize Reactive State
+      initState(this);
+    }
+    
+    Monx.prototype.dispatch = function(name, payload) {
+      this.actions[name](this.state, payload);
+    }
+    
+    Monx.prototype.install = function(instance) {
+      // Add to set of instances to update
+      this.instances.push(instance);
+    }
+    
+    Monx.init = function(Moon) {
+      var MoonRender = Moon.prototype.render;
       Moon.prototype.render = function() {
         var name = null;
         var dom = null;
+        var store = null;
     
-        if(this.$options.store !== undefined && tested[(name = this.$name)] !== true) {
-          // Mark this component as tested
-          tested[name] = true;
+        if((store = this.$options.store) !== undefined) {
+          this.$data.store = store;
+          store.install(this);
     
-          // Setup target to capture dependencies
-          target = name;
+          if(tested[(name = this.$name)] !== true) {
+            // Mark this component as tested
+            tested[name] = true;
     
-          // Mount
-          dom = MoonRender.apply(this, arguments);
+            // Setup target to capture dependencies
+            target = name;
     
-          // Stop capturing dependencies
-          target = null;
+            // Mount
+            dom = MoonRender.apply(this, arguments);
+    
+            // Stop capturing dependencies
+            target = null;
+          } else {
+            dom = MoonRender.apply(this, arguments);
+          }
         } else {
           dom = MoonRender.apply(this, arguments);
         }
