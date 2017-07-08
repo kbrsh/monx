@@ -4,7 +4,7 @@ Clean State Management for Moon
 
 ### Features
 
-* :balloon: Lightweight - 611 bytes minified and gzipped
+* :balloon: Lightweight - 598 bytes minified and gzipped
 * :zap: Performant - analyzes dependencies and updates view accordingly
 * :bulb: Simple - just dispatch actions to update the state
 

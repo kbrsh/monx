@@ -1,6 +1,6 @@
 {
   "name": "monx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Clean State Management for Moon",
   "main": "dist/monx.min.js",
   "scripts": {
