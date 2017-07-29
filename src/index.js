@@ -1,3 +1,4 @@
+const MoonDestroy = Moon.prototype.destroy;
 let target = null;
 let tested = {};
 
@@ -26,6 +27,14 @@ Monx.prototype.dispatch = function(name, payload) {
 }
 
 Monx.prototype.install = function(instance) {
+  // Remove store when destroyed
+  let store = this;
+  instance.destroy = function() {
+    let instances = store.instances;
+    instances.splice(instances.indexOf(this), 1);
+    MoonDestroy.apply(this, arguments);
+  }
+
   // Add to set of instances to update
   this.instances.push(instance);
 }
