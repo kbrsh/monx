@@ -9,7 +9,7 @@
   /* ======= Global Monx ======= */
   (typeof module === "object" && module.exports) ? module.exports = factory() : root.Monx = factory();
 }(this, function() {
-    var MoonDestroy = Moon.prototype.destroy;
+    var MoonDestroy = null;
     var target = null;
     var tested = {};
     
@@ -94,6 +94,8 @@
     
     Monx.init = function(Moon) {
       var MoonRender = Moon.prototype.render;
+      MoonDestroy = Moon.prototype.destroy;
+      
       Moon.prototype.render = function() {
         var name = null;
         var dom = null;

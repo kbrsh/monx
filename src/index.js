@@ -1,4 +1,4 @@
-const MoonDestroy = Moon.prototype.destroy;
+let MoonDestroy = null;
 let target = null;
 let tested = {};
 
@@ -41,6 +41,8 @@ Monx.prototype.install = function(instance) {
 
 Monx.init = function(Moon) {
   const MoonRender = Moon.prototype.render;
+  MoonDestroy = Moon.prototype.destroy;
+  
   Moon.prototype.render = function() {
     let name = null;
     let dom = null;
