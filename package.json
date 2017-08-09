@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KingPixil/monx.git"
+    "url": "git+https://github.com/kbrsh/monx.git"
   },
   "keywords": [
     "monx",
@@ -20,9 +20,9 @@
   "author": "Kabir Shah",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/KingPixil/monx/issues"
+    "url": "https://github.com/kbrsh/monx/issues"
   },
-  "homepage": "https://github.com/KingPixil/monx#readme",
+  "homepage": "https://github.com/kbrsh/monx#readme",
   "devDependencies": {
     "buble": "^0.15.2",
     "gulp": "^3.9.1",
