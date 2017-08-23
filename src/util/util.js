@@ -22,7 +22,7 @@ const initState = function(store) {
         _state[key] = value;
 
         for(let i = 0; i < instances.length; i++) {
-          if(map[(currentInstance = instances[i]).$name][key] === true) {
+          if(map[(currentInstance = instances[i]).name][key] === true) {
             currentInstance.build();
           }
         }

@@ -42,17 +42,17 @@ Monx.prototype.install = function(instance) {
 Monx.init = function(Moon) {
   const MoonRender = Moon.prototype.render;
   MoonDestroy = Moon.prototype.destroy;
-  
+
   Moon.prototype.render = function() {
     let name = null;
     let dom = null;
     let store = null;
 
-    if((store = this.$options.store) !== undefined) {
-      this.$data.store = store;
+    if((store = this.options.store) !== undefined) {
+      this.data.store = store;
       store.install(this);
 
-      if(tested[(name = this.$name)] !== true) {
+      if(tested[(name = this.name)] !== true) {
         // Mark this component as tested
         tested[name] = true;
 

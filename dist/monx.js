@@ -37,7 +37,7 @@
             _state[key] = value;
     
             for(var i = 0; i < instances.length; i++) {
-              if(map[(currentInstance = instances[i]).$name][key] === true) {
+              if(map[(currentInstance = instances[i]).name][key] === true) {
                 currentInstance.build();
               }
             }
@@ -95,17 +95,17 @@
     Monx.init = function(Moon) {
       var MoonRender = Moon.prototype.render;
       MoonDestroy = Moon.prototype.destroy;
-      
+    
       Moon.prototype.render = function() {
         var name = null;
         var dom = null;
         var store = null;
     
-        if((store = this.$options.store) !== undefined) {
-          this.$data.store = store;
+        if((store = this.options.store) !== undefined) {
+          this.data.store = store;
           store.install(this);
     
-          if(tested[(name = this.$name)] !== true) {
+          if(tested[(name = this.name)] !== true) {
             // Mark this component as tested
             tested[name] = true;
     
