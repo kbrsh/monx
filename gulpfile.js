@@ -32,7 +32,7 @@ const comment = `/**
  * Monx v${pkg.version}
  * Copyright 2017 Kabir Shah
  * Released under the MIT License
- * https://github.com/KingPixil/monx
+ * https://github.com/kbrsh/monx
  */\r\n`;
 
 // Gulp Buble Plugin
