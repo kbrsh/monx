@@ -7,14 +7,15 @@
 
 (function(root, factory) {
   /* ======= Global Monx ======= */
-  (typeof module === "object" && module.exports) ? module.exports = factory() : root.Monx = factory();
+  if(typeof module === "undefined") {
+    root.Monx = factory();
+  } else {
+    module.exports = factory();
+  }
 }(this, function() {
-    var MoonDestroy = null;
-    var target = null;
-    var tested = {};
+    var MoonDestroy;
     
     var initState = function(store) {
-      var currentInstance = null;
       var instances = store.instances;
       var map = store.map;
       var state = store.state;
@@ -23,7 +24,8 @@
       var loop = function ( key ) {
         Object.defineProperty(state, key, {
           get: function() {
-            if(target !== null) {
+            var target = store.target;
+            if(target !== undefined) {
               if(map[target] === undefined) {
                 map[target] = {};
               }
@@ -37,7 +39,8 @@
             _state[key] = value;
     
             for(var i = 0; i < instances.length; i++) {
-              if(map[(currentInstance = instances[i]).name][key] === true) {
+              var currentInstance = instances[i];
+              if(map[currentInstance.name][key] === true) {
                 currentInstance.build();
               }
             }
@@ -71,6 +74,9 @@
       // Setup dependency map
       this.map = {};
     
+      // Component to capture
+      this.target = undefined;
+    
       // Initialize Reactive State
       initState(this);
     }
@@ -79,9 +85,23 @@
       this.actions[name](this.state, payload);
     }
     
-    Monx.prototype.install = function(instance) {
-      // Remove store when destroyed
+    Monx.prototype.init = function(instance) {
       var store = this;
+    
+      // Add store to data
+      instance.data["store"] = store;
+    
+      // Capture dependencies
+      var render = instance.render;
+      instance.render = function() {
+        store.target = this.name;
+        var dom = render.apply(this, arguments);
+        store.target = undefined;
+        return dom;
+      }
+    
+    
+      // Remove store when destroyed
       instance.destroy = function() {
         var instances = store.instances;
         instances.splice(instances.indexOf(this), 1);
@@ -93,40 +113,7 @@
     }
     
     Monx.init = function(Moon) {
-      var MoonRender = Moon.prototype.render;
       MoonDestroy = Moon.prototype.destroy;
-    
-      Moon.prototype.render = function() {
-        var name = null;
-        var dom = null;
-        var store = null;
-    
-        if((store = this.options.store) !== undefined) {
-          this.data.store = store;
-          store.install(this);
-    
-          if(tested[(name = this.name)] !== true) {
-            // Mark this component as tested
-            tested[name] = true;
-    
-            // Setup target to capture dependencies
-            target = name;
-    
-            // Mount
-            dom = MoonRender.apply(this, arguments);
-    
-            // Stop capturing dependencies
-            target = null;
-          } else {
-            dom = MoonRender.apply(this, arguments);
-          }
-        } else {
-          dom = MoonRender.apply(this, arguments);
-        }
-    
-        this.render = MoonRender;
-        return dom;
-      }
     }
     
     return Monx;

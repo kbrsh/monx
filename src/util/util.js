@@ -1,14 +1,15 @@
 const initState = function(store) {
-  let currentInstance = null;
-  let instances = store.instances;
-  let map = store.map;
   let state = store.state;
   let _state = store._state;
+
+  let instances = store.instances;
+  let map = store.map;
 
   for(let key in _state) {
     Object.defineProperty(state, key, {
       get: function() {
-        if(target !== null) {
+        const target = store.target;
+        if(target !== undefined) {
           if(map[target] === undefined) {
             map[target] = {};
           }
@@ -22,7 +23,8 @@ const initState = function(store) {
         _state[key] = value;
 
         for(let i = 0; i < instances.length; i++) {
-          if(map[(currentInstance = instances[i]).name][key] === true) {
+          let currentInstance = instances[i];
+          if(map[currentInstance.name][key] === true) {
             currentInstance.build();
           }
         }

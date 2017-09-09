@@ -1,6 +1,10 @@
 (function(root, factory) {
   /* ======= Global Monx ======= */
-  (typeof module === "object" && module.exports) ? module.exports = factory() : root.Monx = factory();
+  if(typeof module === "undefined") {
+    root.Monx = factory();
+  } else {
+    module.exports = factory();
+  }
 }(this, function() {
     //=require ../dist/monx.js
     return Monx;

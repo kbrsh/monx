@@ -1,24 +1,25 @@
-let MoonDestroy = null;
-let target = null;
-let tested = {};
+let MoonDestroy;
 
 //=require ./util/util.js
 
 function Monx(options) {
-  // Setup state
+  // State
   this.state = {};
   defineProperty(this, "_state", options.state, {});
 
-  // Setup actions
+  // Actions
   defineProperty(this, "actions", options.actions, {});
 
-  // Setup instances
+  // Instances
   this.instances = [];
 
-  // Setup dependency map
+  // Dependency map
   this.map = {};
 
-  // Initialize Reactive State
+  // Component to capture
+  this.target = undefined;
+
+  // Initialize reactive state
   initState(this);
 }
 
@@ -26,9 +27,23 @@ Monx.prototype.dispatch = function(name, payload) {
   this.actions[name](this.state, payload);
 }
 
-Monx.prototype.install = function(instance) {
-  // Remove store when destroyed
+Monx.prototype.init = function(instance) {
+  const name = instance.name;
   let store = this;
+
+  // Add store to data
+  instance.data["store"] = store;
+
+  // Capture dependencies
+  const render = instance.render;
+  instance.render = function() {
+    store.target = name;
+    const dom = render.apply(this, arguments);
+    store.target = undefined;
+    return dom;
+  }
+
+  // Remove store when destroyed
   instance.destroy = function() {
     let instances = store.instances;
     instances.splice(instances.indexOf(this), 1);
@@ -36,42 +51,9 @@ Monx.prototype.install = function(instance) {
   }
 
   // Add to set of instances to update
-  this.instances.push(instance);
+  store.instances.push(instance);
 }
 
 Monx.init = function(Moon) {
-  const MoonRender = Moon.prototype.render;
   MoonDestroy = Moon.prototype.destroy;
-
-  Moon.prototype.render = function() {
-    let name = null;
-    let dom = null;
-    let store = null;
-
-    if((store = this.options.store) !== undefined) {
-      this.data.store = store;
-      store.install(this);
-
-      if(tested[(name = this.name)] !== true) {
-        // Mark this component as tested
-        tested[name] = true;
-
-        // Setup target to capture dependencies
-        target = name;
-
-        // Mount
-        dom = MoonRender.apply(this, arguments);
-
-        // Stop capturing dependencies
-        target = null;
-      } else {
-        dom = MoonRender.apply(this, arguments);
-      }
-    } else {
-      dom = MoonRender.apply(this, arguments);
-    }
-
-    this.render = MoonRender;
-    return dom;
-  }
 }
