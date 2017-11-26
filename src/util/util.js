@@ -24,7 +24,8 @@ const initState = function(store) {
             currentInstance.build();
           }
         }
-      }
+      },
+      enumerable: true
     });
   }
 }

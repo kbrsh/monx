@@ -41,7 +41,8 @@
                 currentInstance.build();
               }
             }
-          }
+          },
+          enumerable: true
         });
       };
     
