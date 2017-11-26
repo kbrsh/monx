@@ -102,6 +102,7 @@
       instance.destroy = function() {
         var instances = store.instances;
         instances.splice(instances.indexOf(this), 1);
+        delete store.map[name];
         MoonDestroy.apply(this, arguments);
       }
     
