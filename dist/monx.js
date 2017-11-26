@@ -27,10 +27,6 @@
           get: function() {
             var target = store.target;
             if(target !== undefined) {
-              if(map[target] === undefined) {
-                map[target] = {};
-              }
-    
               map[target][key] = true;
             }
     
@@ -111,6 +107,9 @@
     
       // Add to set of instances to update
       store.instances.push(instance);
+    
+      // Add to dependency map
+      store.map[name] = {};
     }
     
     Monx.init = function(Moon) {

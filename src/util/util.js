@@ -10,10 +10,6 @@ const initState = function(store) {
       get: function() {
         const target = store.target;
         if(target !== undefined) {
-          if(map[target] === undefined) {
-            map[target] = {};
-          }
-
           map[target][key] = true;
         }
 
