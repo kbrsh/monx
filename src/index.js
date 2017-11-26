@@ -32,7 +32,7 @@ Monx.prototype.init = function(instance) {
   let store = this;
 
   // Add store to data
-  instance.data["store"] = store;
+  instance.data.store = store;
 
   // Capture dependencies
   const render = instance.render;

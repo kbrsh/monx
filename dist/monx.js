@@ -16,10 +16,11 @@
     var MoonDestroy;
     
     var initState = function(store) {
-      var instances = store.instances;
-      var map = store.map;
       var state = store.state;
       var _state = store._state;
+    
+      var instances = store.instances;
+      var map = store.map;
     
       var loop = function ( key ) {
         Object.defineProperty(state, key, {
@@ -61,23 +62,23 @@
     
     
     function Monx(options) {
-      // Setup state
+      // State
       this.state = {};
       defineProperty(this, "_state", options.state, {});
     
-      // Setup actions
+      // Actions
       defineProperty(this, "actions", options.actions, {});
     
-      // Setup instances
+      // Instances
       this.instances = [];
     
-      // Setup dependency map
+      // Dependency map
       this.map = {};
     
       // Component to capture
       this.target = undefined;
     
-      // Initialize Reactive State
+      // Initialize reactive state
       initState(this);
     }
     
@@ -86,20 +87,20 @@
     }
     
     Monx.prototype.init = function(instance) {
+      var name = instance.name;
       var store = this;
     
       // Add store to data
-      instance.data["store"] = store;
+      instance.data.store = store;
     
       // Capture dependencies
       var render = instance.render;
       instance.render = function() {
-        store.target = this.name;
+        store.target = name;
         var dom = render.apply(this, arguments);
         store.target = undefined;
         return dom;
       }
-    
     
       // Remove store when destroyed
       instance.destroy = function() {
@@ -109,7 +110,7 @@
       }
     
       // Add to set of instances to update
-      this.instances.push(instance);
+      store.instances.push(instance);
     }
     
     Monx.init = function(Moon) {
