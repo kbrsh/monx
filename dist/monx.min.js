@@ -1,6 +1,6 @@
 /**
  * Monx v0.1.1
- * Copyright 2017 Kabir Shah
+ * Copyright 2017-2018 Kabir Shah
  * Released under the MIT License
  * https://github.com/kbrsh/monx
  */
