@@ -3,8 +3,10 @@
 // Gulp
 const gulp = require('gulp');
 
-// Javascript transpiler
-const buble = require('buble');
+// Javascript bundler and transpiler
+const rollup = require("rollup-stream");
+const buble = require("rollup-plugin-buble");
+const stream = require("vinyl-source-stream");
 
 // Javascript minifier
 const uglify = require("gulp-uglify");
@@ -21,9 +23,6 @@ const header = require("gulp-header");
 // Display size of file
 const size = require("gulp-size");
 
-// Transform
-const Transform = require("stream").Transform;
-
 // Package information
 const pkg = require('./package.json');
 
@@ -35,43 +34,20 @@ const comment = `/**
  * https://github.com/kbrsh/monx
  */\r\n`;
 
-// Gulp Buble Plugin
-const gulpBuble = function(options) {
-  return new Transform({
-    objectMode: true,
-    transform: function(file, encoding, callback) {
-      if(!file.isStream()) {
-        if(options === undefined) {
-          options = {};
-        }
-
-        let result = null;
-        try {
-          result = buble.transform(file.contents.toString(), options);
-        } catch(e) {
-          throw new Error("[Buble] Error: " + e);
-        }
-
-        file.contents = new Buffer(result.code);
-
-        callback(null, file);
-      }
-    }
-  });
-};
-
 // Build Moon
-gulp.task('transpile', function() {
-  return gulp.src(['./src/index.js'])
-    .pipe(include())
-    .pipe(gulpBuble({
+gulp.task("build", function() {
+  return rollup({
+    input: "./src/index.js",
+    format: "umd",
+    name: "Monx",
+    plugins: [buble({
       namedFunctionExpressions: false,
       transforms: {
         arrow: true,
         classes: false,
         collections: false,
         computedProperty: false,
-        conciseMethodProperty: false,
+        conciseMethodProperty: true,
         constLoop: false,
         dangerousForOf: false,
         dangerousTaggedTemplateString: false,
@@ -89,17 +65,10 @@ gulp.task('transpile', function() {
         templateString: true,
         unicodeRegExp: false
       }
-    }))
-    .pipe(concat('monx.js'))
-    .pipe(gulp.dest('./dist/'));
-});
-
-gulp.task('build', ['transpile'], function() {
-  return gulp.src(['./src/wrapper.js'])
-    .pipe(include())
-    .pipe(concat('monx.js'))
+    })]
+  })
+    .pipe(stream("monx.js"))
     .pipe(header(comment + '\n'))
-    .pipe(size())
     .pipe(gulp.dest('./dist/'));
 });
 
@@ -108,13 +77,24 @@ gulp.task('minify', ['build'], function() {
   return gulp.src(['./dist/monx.js'])
     .pipe(uglify())
     .pipe(header(comment))
+    .pipe(concat('monx.min.js'))
+    .pipe(gulp.dest('./dist/'))
     .pipe(size())
     .pipe(size({
       gzip: true
-    }))
-    .pipe(concat('monx.min.js'))
-    .pipe(gulp.dest('./dist/'));
+    }));
+});
+
+gulp.task("es6", function() {
+  return rollup({
+    input: "./src/index.js",
+    format: "es",
+  })
+    .pipe(stream("monx.esm.js"))
+    .pipe(header(comment + "\n"))
+    .pipe(gulp.dest("./dist/"))
+    .pipe(size());
 });
 
 // Default task
-gulp.task('default', ['build', 'minify']);
+gulp.task('default', ['build', 'minify', 'es6']);
