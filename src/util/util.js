@@ -1,4 +1,4 @@
-const initState = function(store) {
+export const initState = function(store) {
   let state = store.state;
   let _state = store._state;
 
@@ -30,7 +30,7 @@ const initState = function(store) {
   }
 }
 
-const defineProperty = function(obj, prop, value, def) {
+export const defineProperty = function(obj, prop, value, def) {
   if(value === undefined) {
     obj[prop] = def;
   } else {
