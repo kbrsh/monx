@@ -24,6 +24,9 @@ function Monx(options) {
 }
 
 Monx.prototype.dispatch = function(name, payload) {
+  if (!this.actions[name]) {
+    throw new Error(`Action ${name} is not defined`)
+  }
   this.actions[name](this.state, payload);
 }
 
